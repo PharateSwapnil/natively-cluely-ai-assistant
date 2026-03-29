@@ -557,7 +557,7 @@ This runs: Vite build → TypeScript compile → native module build → electro
 - Multiple screenshot support for multi-part problems
 - Smart fallback to Groq Llama 4 Scout if primary vision model fails
 
-### Premium Profile Intelligence
+### Premium Profile Intelligence (Enabled in local builds)
 
 - **Job Description & Resume Context (MVP)**: Upload Resume + JD and Natively builds a context profile for answer personalization.
 - **Resume OCR Ingestion (MVP)**: Supports OCR/text extraction from image resumes (`.png/.jpg`) plus `.pdf`, `.docx`, and `.txt`.
