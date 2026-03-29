@@ -939,6 +939,7 @@ export function initializeIpcHandlers(appState: AppState): void {
         ibmWatsonRegion: creds.ibmWatsonRegion || 'us-south',
         hasSonioxKey: hasKey(creds.sonioxApiKey),
         hasTavilyKey: hasKey(creds.tavilyApiKey),
+        hasBraveKey: hasKey(creds.braveApiKey),
         // Dynamic Model Discovery - preferred models
         geminiPreferredModel: creds.geminiPreferredModel || undefined,
         groqPreferredModel: creds.groqPreferredModel || undefined,
@@ -946,7 +947,7 @@ export function initializeIpcHandlers(appState: AppState): void {
         claudePreferredModel: creds.claudePreferredModel || undefined,
       };
     } catch (error: any) {
-      return { hasGeminiKey: false, hasGroqKey: false, hasOpenaiKey: false, hasClaudeKey: false, googleServiceAccountPath: null, sttProvider: 'google', groqSttModel: 'whisper-large-v3-turbo', hasSttGroqKey: false, hasSttOpenaiKey: false, hasDeepgramKey: false, hasElevenLabsKey: false, hasAzureKey: false, azureRegion: 'eastus', hasIbmWatsonKey: false, ibmWatsonRegion: 'us-south', hasSonioxKey: false, hasTavilyKey: false };
+      return { hasGeminiKey: false, hasGroqKey: false, hasOpenaiKey: false, hasClaudeKey: false, googleServiceAccountPath: null, sttProvider: 'google', groqSttModel: 'whisper-large-v3-turbo', hasSttGroqKey: false, hasSttOpenaiKey: false, hasDeepgramKey: false, hasElevenLabsKey: false, hasAzureKey: false, azureRegion: 'eastus', hasIbmWatsonKey: false, ibmWatsonRegion: 'us-south', hasSonioxKey: false, hasTavilyKey: false, hasBraveKey: false };
     }
   });
 
@@ -2277,13 +2278,18 @@ export function initializeIpcHandlers(appState: AppState): void {
       }
       const engine = orchestrator.getCompanyResearchEngine();
 
-      // Wire Tavily Search provider if key is configured
+      // Wire Brave Search provider (preferred) with Tavily fallback for compatibility
       const { CredentialsManager } = require('./services/CredentialsManager');
       const cm = CredentialsManager.getInstance();
-      const tavilyApiKey = cm.getTavilyApiKey();
-      if (tavilyApiKey) {
-        const { TavilySearchProvider } = require('../premium/electron/knowledge/TavilySearchProvider');
-        engine.setSearchProvider(new TavilySearchProvider(tavilyApiKey));
+      const braveApiKey = cm.getBraveApiKey() || process.env.BRAVE_SEARCH_API_KEY;
+      if (braveApiKey) {
+        const { BraveSearchProvider } = require('../premium/electron/knowledge/BraveSearchProvider');
+        engine.setSearchProvider(new BraveSearchProvider(braveApiKey));
+      } else {
+        const tavilyApiKey = cm.getTavilyApiKey();
+        if (tavilyApiKey) {
+          console.warn('[IPC] Tavily key present but Brave is preferred for MVP web research.');
+        }
       }
 
       // Build full JD context so the dossier is tailored to the exact role
@@ -2365,10 +2371,21 @@ export function initializeIpcHandlers(appState: AppState): void {
   });
 
   // ==========================================
-  // Tavily Search API Credentials
+  // Web Search API Credentials (Brave preferred)
   // ==========================================
 
-  safeHandle("set-tavily-api-key", async (_, apiKey: string) => {
+  
+
+  safeHandle("set-brave-api-key", async (_, apiKey: string) => {
+    try {
+      const { CredentialsManager } = require('./services/CredentialsManager');
+      CredentialsManager.getInstance().setBraveApiKey(apiKey);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  });
+safeHandle("set-tavily-api-key", async (_, apiKey: string) => {
     try {
       if (apiKey && !apiKey.startsWith('tvly-')) {
         return { success: false, error: 'Invalid Tavily API key. Keys must start with "tvly-".' };

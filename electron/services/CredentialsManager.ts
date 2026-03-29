@@ -45,8 +45,9 @@ export interface StoredCredentials {
     sonioxApiKey?: string;
     sttLanguage?: string;
     aiResponseLanguage?: string;
-    // Tavily Search
+    // Web search
     tavilyApiKey?: string;
+    braveApiKey?: string;
     // Dynamic Model Discovery – preferred models per provider
     geminiPreferredModel?: string;
     groqPreferredModel?: string;
@@ -152,6 +153,10 @@ export class CredentialsManager {
 
     public getTavilyApiKey(): string | undefined {
         return this.credentials.tavilyApiKey;
+    }
+
+    public getBraveApiKey(): string | undefined {
+        return this.credentials.braveApiKey;
     }
 
     public getSttLanguage(): string {
@@ -274,6 +279,12 @@ export class CredentialsManager {
         this.credentials.tavilyApiKey = key.trim() || undefined;
         this.saveCredentials();
         console.log('[CredentialsManager] Tavily API Key updated');
+    }
+
+    public setBraveApiKey(key: string): void {
+        this.credentials.braveApiKey = key.trim() || undefined;
+        this.saveCredentials();
+        console.log('[CredentialsManager] Brave API Key updated');
     }
 
     public setSttLanguage(language: string): void {
