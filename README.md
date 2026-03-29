@@ -471,7 +471,7 @@ npm run build:native
 
 ### Environment Variables
 
-Create a `.env` file:
+Create a `.env` file (or copy from `.env.example`):
 
 ```env
 # Cloud AI
@@ -494,8 +494,11 @@ USE_OLLAMA=true
 OLLAMA_MODEL=llama3.2
 OLLAMA_URL=http://localhost:11434
 
-# Default Model Configuration
+## Default Model Configuration
 DEFAULT_MODEL=gemini-3.1-flash-lite-preview
+
+# Profile Intelligence MVP
+BRAVE_SEARCH_API_KEY=your_brave_subscription_token
 ```
 
 ### Run (Development)
@@ -553,10 +556,11 @@ This runs: Vite build → TypeScript compile → native module build → electro
 - Multiple screenshot support for multi-part problems
 - Smart fallback to Groq Llama 4 Scout if primary vision model fails
 
-### Premium Profile Intelligence
+### Premium Profile Intelligence (Enabled in local builds)
 
-- **Job Description & Resume Context**: Natively understands your background and the role you're applying for to provide highly tailored, context-aware answers.
-- **Company Research**: Get instant intelligence and dossiers on the company you are interviewing with.
+- **Job Description & Resume Context (MVP)**: Upload Resume + JD and Natively builds a context profile for answer personalization.
+- **Resume OCR Ingestion (MVP)**: Supports OCR/text extraction from image resumes (`.png/.jpg`) plus `.pdf`, `.docx`, and `.txt`.
+- **Automated Company Research & Dossiers (MVP)**: Uses Brave Search API to collect web evidence and produce source-linked company dossiers.
 - **Negotiation Assistance**: Real-time guidance and strategy during offer and salary negotiations.
 
 ### Contextual Actions
