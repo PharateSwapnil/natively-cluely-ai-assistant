@@ -843,7 +843,7 @@ const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ isOpen, onClose, init
                     if (creds.azureRegion) setSttAzureRegion(creds.azureRegion);
                     setHasStoredIbmWatsonKey(creds.hasIbmWatsonKey);
                     setHasStoredSonioxKey(creds.hasSonioxKey || false);
-                    setHasStoredTavilyKey(creds.hasTavilyKey || false);
+                    setHasStoredTavilyKey((creds.hasBraveKey || creds.hasTavilyKey) || false);
                 }
             } catch (e) {
                 console.error('Failed to load STT settings:', e);
@@ -982,7 +982,7 @@ const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ isOpen, onClose, init
         if (!confirm('Are you sure you want to remove the Tavily API Key?')) return;
 
         try {
-            await window.electronAPI?.setTavilyApiKey?.('');
+            await window.electronAPI?.setBraveApiKey?.('');
             setTavilyApiKey('');
             setHasStoredTavilyKey(false);
         } catch (e) {
@@ -1996,7 +1996,7 @@ const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ isOpen, onClose, init
                                                             )}
                                                         </div>
                                                         <p className="text-[11px] text-text-secondary mt-0.5">
-                                                            Powers live web search for company research.
+                                                            Powers live web search for company research using Brave Search API.
                                                         </p>
                                                     </div>
                                                 </div>
@@ -2032,7 +2032,7 @@ const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ isOpen, onClose, init
                                                             setTavilyError('');
                                                             setTavilySaving(true);
                                                             try {
-                                                                const result = await window.electronAPI?.setTavilyApiKey?.(tavilyApiKey.trim());
+                                                                const result = await window.electronAPI?.setBraveApiKey?.(tavilyApiKey.trim());
                                                                 if (result && !result.success) {
                                                                     setTavilyError(result.error ?? 'Failed to save API key.');
                                                                 } else {
@@ -2055,7 +2055,7 @@ const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ isOpen, onClose, init
                                                 <div className="mt-3 flex items-start gap-2 px-3 py-2.5 bg-bg-input/50 rounded-lg">
                                                     <Info size={12} className="text-text-tertiary shrink-0 mt-0.5" />
                                                     <p className="text-[10px] text-text-tertiary leading-relaxed">
-                                                        If not provided, LLM general knowledge is used for company research, which may be outdated. Get your free API key at <span className="text-emerald-500/80 hover:text-emerald-400 underline underline-offset-2 cursor-pointer" onClick={() => window.electronAPI?.openExternal?.('https://app.tavily.com/home')}>app.tavily.com</span>. Keys start with <code className="text-emerald-500/80">tvly-</code>.
+                                                        If not provided, LLM general knowledge is used for company research, which may be outdated. Get your free API key at <span className="text-emerald-500/80 hover:text-emerald-400 underline underline-offset-2 cursor-pointer" onClick={() => window.electronAPI?.openExternal?.('https://api.search.brave.com')}>api.search.brave.com</span>. Use your Brave Search API subscription token.
                                                     </p>
                                                 </div>
                                             </div>
