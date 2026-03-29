@@ -1,7 +1,11 @@
 export class LicenseManager {
   private static instance: LicenseManager;
+  private premium = false;
 
-  private constructor() {}
+  private constructor() {
+    // MVP: allow enabling premium profile flows via env for local development.
+    this.premium = process.env.ENABLE_PROFILE_INTELLIGENCE === 'true';
+  }
 
   static getInstance(): LicenseManager {
     if (!LicenseManager.instance) {
@@ -10,20 +14,21 @@ export class LicenseManager {
     return LicenseManager.instance;
   }
 
-  async activateLicense(_key: string): Promise<{ success: boolean; error?: string }> {
-    // Local build policy: premium features are always enabled.
+  async activateLicense(key: string): Promise<{ success: boolean; error?: string }> {
+    if (!key?.trim()) return { success: false, error: 'License key is required.' };
+    this.premium = true;
     return { success: true };
   }
 
   isPremium(): boolean {
-    return true;
+    return this.premium;
   }
 
   deactivate(): void {
-    // No-op in local build where premium remains enabled.
+    this.premium = false;
   }
 
   getHardwareId(): string {
-    return 'local-premium-enabled';
+    return 'local-dev-hardware-id';
   }
 }

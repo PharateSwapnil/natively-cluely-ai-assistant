@@ -498,6 +498,7 @@ OLLAMA_URL=http://localhost:11434
 DEFAULT_MODEL=gemini-3.1-flash-lite-preview
 
 # Profile Intelligence MVP
+ENABLE_PROFILE_INTELLIGENCE=true
 BRAVE_SEARCH_API_KEY=your_brave_subscription_token
 ```
 
